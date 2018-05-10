@@ -1,10 +1,11 @@
-# Example of kNN implemented from Scratch in Python
+# programme avec python qui fait la classification en utilisant la methode des k plus proche voisin
  
 import csv
 import random
 import math
 import operator
  
+ # une fonction qui prepare le data set iris et le shuflling ou bien le random
 def loadDataset(filename, split, trainingSet=[] , testSet=[]):
 	with open(filename, 'rt') as csvfile:
 	    lines = csv.reader(csvfile)
@@ -18,12 +19,15 @@ def loadDataset(filename, split, trainingSet=[] , testSet=[]):
 	            testSet.append(dataset[x])
  
  
+ #une fonction qui calcule la distance entre deux noeuds donnee
 def euclideanDistance(instance1, instance2, length):
 	distance = 0
 	for x in range(length):
 		distance += pow((instance1[x] - instance2[x]), 2)
 	return math.sqrt(distance)
  
+
+ #une fonction qui nous retourne les k voisin 
 def getNeighbors(trainingSet, testInstance, k):
 	distances = []
 	length = len(testInstance)-1
@@ -36,6 +40,7 @@ def getNeighbors(trainingSet, testInstance, k):
 		neighbors.append(distances[x][0])
 	return neighbors
  
+ #voir le correct vote ou bien reponse de chaque voisin 
 def getResponse(neighbors):
 	classVotes = {}
 	for x in range(len(neighbors)):
@@ -47,6 +52,8 @@ def getResponse(neighbors):
 	sortedVotes = sorted(classVotes.items(), key=operator.itemgetter(1), reverse=True)
 	return sortedVotes[0][0]
  
+
+ #fonction qui calcule la precition de la classification
 def getAccuracy(testSet, predictions):
 	correct = 0
 	for x in range(len(testSet)):
@@ -54,6 +61,8 @@ def getAccuracy(testSet, predictions):
 			correct += 1
 	return (correct/float(len(testSet))) * 100.0
 	
+
+#le main qui contient le tt
 def main():
 	# prepare data
 	trainingSet=[]
@@ -64,13 +73,20 @@ def main():
 	print('Test set: ' + repr(len(testSet)))
 	# generate predictions
 	predictions=[]
+	#on pris les 3 plus proche voisin 
 	k = 3
 	for x in range(len(testSet)):
+		#on recupere les 3 plus proche voisin du noeud courant 
 		neighbors = getNeighbors(trainingSet, testSet[x], k)
+		#on prend la reponse de chaque voisin sa validité
 		result = getResponse(neighbors)
+		#on calcule la precision de la prediction
 		predictions.append(result)
+		#un printf du resultat , esq on a bien classe le noeud ou pas
 		print('> predicted=' + repr(result) + ', actual=' + repr(testSet[x][-1]))
+	#la precision total
 	accuracy = getAccuracy(testSet, predictions)
 	print('Accuracy: ' + repr(accuracy) + '%')
 	
+#notre point d'entree
 main()
